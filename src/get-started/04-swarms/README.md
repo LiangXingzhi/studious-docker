@@ -1,4 +1,50 @@
-### 1 Create a Cluster Windows10
+### 1.1 Create 2 CentOS7 VM using virtualbox
+CentOS701 192.168.56.101
+CentOS702 192.168.56.102
+### 1.2 install docker on the VMs
+### 1.3 stop firewall
+```
+systemctl stop firewalld
+chkconfig firewalld off
+``` 
+### 1.4 init swarm on docker manager
+```
+docker swarm init --advertise-addr 192.168.56.101
+```
+### 1.5 join swarm on docker worker
+token is specified in the results of swarm init command
+```
+docker swarm join --token 
+```
+### 1.6 deploy or redeploy
+getstartedlab is the stack name
+```
+docker stack deploy -c docker-compose.yml getstartedlab
+```
+```
+docker stack ps getstartedlab
+```
+check the service status if the service is fully started
+```
+docker service ls
+```
+
+If need redeploy just modify the docker-compose.yaml and rerun the above commands.
+
+### 1.7 Cleanup and reboot
+remove stack
+```
+docker stack rm getstartedlab
+```
+leave swarm on worker node
+```
+docker swarm leave
+```
+leave swarm on manager node
+```
+docker swarm leave --force
+```
+### 2.1 Create a Cluster Windows10
 First, quickly create a virtual switch for your virtual machines (VMs) to share, so they can connect to each other.
 
 1.1 Launch Hyper-V Manager
@@ -22,7 +68,7 @@ myvm1 "tcp://100.98.100.230:2376"
 myvm2 "tcp://100.98.102.254:2376"
 ```
 
-### 2 initialize swarm and add nodes
+### 2.2 initialize swarm and add nodes
 myvm1 init as docker manager
 ```
 docker-machine ssh myvm1 "docker swarm init --advertise-addr 100.98.100.230"
@@ -48,7 +94,7 @@ This node joined a swarm as a worker.
 docker-machine ssh myvm1 "docker node ls"
 ```
 
-### 3 deploy app to swarm cluster
+### 2.3 deploy app to swarm cluster
 ```
 docker-machine env myvm1
 
